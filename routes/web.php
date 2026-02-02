@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardGroundCheck;
 use App\Http\Controllers\GroundCheckController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,5 @@ Route::get('/', function () {
 });
 Route::resource('/GroundCheck', GroundCheckController::class);
 Route::get('/GroundCheck/list-desa/{kdkec}', [GroundCheckController::class, 'getListDesa'])->name('GroundCheck.listDesa');
+Route::get('/DashboardGC/export-data', [DashboardGroundCheck::class, 'exportData'])->name('DashboardGC.exportData');
+Route::resource('/DashboardGC', DashboardGroundCheck::class);
