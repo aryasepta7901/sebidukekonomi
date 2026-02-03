@@ -285,61 +285,60 @@ class GroundCheckController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // 1. Validasi Input
+        // 1. Ambil data petugas untuk pengecekan nama
+        $petugas = PetugasGC::find($request->petugas_id); // Sesuaikan namespace model Petugas Anda
+        $isAgenStatistik = ($petugas && $petugas->nama == 'Agen Statistik Universitas Bina Insan');
+
+        // 2. Validasi Input dengan Logika Kondisional
         $request->validate([
             'petugas_id'      => 'required|exists:petugas_gc,id',
             'latitude'        => 'required',
             'longitude'       => 'required',
-            'foto_compressed' => 'required',
-            'deskripsi_usaha' => 'nullable|string', // Tambahan validasi
-            'catatan'         => 'nullable|string|required', // Tambahan validasi
+            // Jika Agen Statistik, maka foto_compressed & catatan menjadi optional (nullable)
+            'foto_compressed' => $isAgenStatistik ? 'nullable' : 'required',
+            'deskripsi_usaha' => 'nullable|string',
+            'catatan'         => $isAgenStatistik ? 'nullable|string' : 'required|string',
         ], [
             'petugas_id.required'      => 'Petugas harus dipilih.',
-            'catatan.required'      => 'Catatan harus diisi, minimal strip (-).',
             'latitude.required'        => 'Koordinat lokasi (Latitude) belum terdeteksi.',
             'longitude.required'       => 'Koordinat lokasi (Longitude) belum terdeteksi.',
             'foto_compressed.required' => 'Foto usaha wajib diambil/diunggah.',
+            'catatan.required'         => 'Catatan harus diisi, minimal strip (-).',
         ]);
 
         try {
             $item = GroundCheck::findOrFail($id);
 
-            // 2. Update Data Teknis & Tambahan
+            // 3. Update Data Teknis & Tambahan
             $item->petugas_id      = $request->petugas_id;
             $item->latitude        = $request->latitude;
             $item->longitude       = $request->longitude;
-            $item->deskripsi_usaha = $request->deskripsi_usaha; // Simpan Deskripsi
-            $item->catatan         = $request->catatan;         // Simpan Catatan
+            $item->deskripsi_usaha = $request->deskripsi_usaha;
+            $item->catatan         = $request->catatan;
 
-            // 3. Proses Foto (Base64 ke Folder Public)
+            // 4. Proses Foto (Hanya jika ada foto yang diunggah)
             if ($request->filled('foto_compressed')) {
                 $imageData = $request->foto_compressed;
 
-                // --- PROSES HAPUS FOTO LAMA (Jika ada) ---
+                // Hapus foto lama jika ada proses upload foto baru
                 if ($item->foto_usaha && file_exists(public_path($item->foto_usaha))) {
                     unlink(public_path($item->foto_usaha));
                 }
 
-                // --- PROSES DECODE BASE64 ---
                 $imageInfo = explode(";base64,", $imageData);
                 $imageTypeInfo = explode("image/", $imageInfo[0]);
                 $imageType = $imageTypeInfo[1];
                 $imageContent = str_replace(' ', '+', $imageInfo[1]);
 
-                // --- TENTUKAN PATH PENYIMPANAN DI PUBLIC ---
                 $folderPath = 'uploads/foto_groundcheck/';
                 $fileName = 'gc_' . $item->idsbr . '_' . time() . '.' . $imageType;
                 $fullPath = public_path($folderPath . $fileName);
 
-                // --- PASTIKAN FOLDER ADA ---
                 if (!File::isDirectory(public_path($folderPath))) {
                     File::makeDirectory(public_path($folderPath), 0777, true, true);
                 }
 
-                // --- SIMPAN FILE FISIK ---
                 File::put($fullPath, base64_decode($imageContent));
-
-                // --- SIMPAN PATH KE DATABASE ---
                 $item->foto_usaha = $folderPath . $fileName;
             }
 

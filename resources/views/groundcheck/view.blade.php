@@ -80,7 +80,9 @@
                                         <input type="text" name="latitude" id="latitude"
                                             class="form-control @error('latitude') is-invalid @enderror"
                                             value="{{ old('latitude', $GroundCheck->latitude != 0 ? $GroundCheck->latitude : '') }}"
-                                            placeholder="Klik Deteksi..." readonly>
+                                            placeholder="Klik Deteksi..."
+                                            {{ old('petugas_id', $GroundCheck->petugas_id) == '02' ? '' : 'readonly' }}
+                                            onfocus="moveToInputLocation()">
                                     </div>
                                 </div>
 
@@ -92,7 +94,9 @@
                                         <input type="text" name="longitude" id="longitude"
                                             class="form-control @error('longitude') is-invalid @enderror"
                                             value="{{ old('longitude', $GroundCheck->longitude != 0 ? $GroundCheck->longitude : '') }}"
-                                            placeholder="Klik Deteksi..." readonly>
+                                            placeholder="Klik Deteksi..."
+                                            {{ old('petugas_id', $GroundCheck->petugas_id) == '02' ? '' : 'readonly' }}
+                                            onfocus="moveToInputLocation()">
                                     </div>
                                 </div>
 
@@ -112,8 +116,7 @@
 
                         {{-- Dokumentasi Foto --}}
                         <div class="form-group">
-                            <label>Dokumentasi Foto Usaha <span class="text-danger">*</span></label>
-
+                            <label>Dokumentasi Foto Usaha <span id="bintang-foto" class="text-danger">*</span></label>
                             {{-- Foto yang sudah tersimpan di database --}}
                             @if ($GroundCheck->foto_usaha)
                                 <div id="foto-lama-container" class="mb-2">
@@ -185,9 +188,11 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="catatan">Catatan Lapangan <span class="text-danger">*</span></label>
+                            <label for="catatan">
+                                Catatan Lapangan <span id="bintang-catatan" class="text-danger">*</span>
+                            </label>
                             <textarea name="catatan" id="catatan" class="form-control @error('catatan') is-invalid @enderror" rows="3"
-                                placeholder="Tambahkan catatan tambahan jika diperlukan (misal: patokan lokasi, kendala, dll)...">{{ old('catatan', $GroundCheck->catatan) }}</textarea>
+                                placeholder="Tambahkan catatan tambahan jika diperlukan...">{{ old('catatan', $GroundCheck->catatan) }}</textarea>
                             @error('catatan')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -469,5 +474,52 @@
                 document.getElementById('foto-lama-container').classList.remove('d-none');
             }
         }
+    </script>
+    {{-- Script untuk agen statistik --}}
+    <script>
+        $(document).ready(function() {
+            const targetPetugas = "Agen Statistik Universitas Bina Insan";
+
+            $('#petugas').on('change', function() {
+                let selectedText = $(this).find('option:selected').text().trim();
+
+                let latInput = document.getElementById('latitude');
+                let lngInput = document.getElementById('longitude');
+                let bintangFoto = document.getElementById('bintang-foto');
+                let bintangCatatan = document.getElementById('bintang-catatan');
+
+                if (selectedText === targetPetugas) {
+                    // Aktifkan input koordinat
+                    latInput.readOnly = false;
+                    lngInput.readOnly = false;
+
+                    // Sembunyikan tanda wajib (*) pada Foto dan Catatan
+                    if (bintangFoto) bintangFoto.classList.add('d-none');
+                    if (bintangCatatan) bintangCatatan.classList.add('d-none');
+
+                    // Matikan pembatas radius (seperti bahasan sebelumnya)
+                    marker.off('drag');
+                    marker.on('drag', function(e) {
+                        var finalPos = e.target.getLatLng();
+                        latInput.value = finalPos.lat.toFixed(8);
+                        lngInput.value = finalPos.lng.toFixed(8);
+                        centerPoint = finalPos;
+                        drawRadius(finalPos);
+                    });
+
+                } else {
+                    // Kembalikan ke mode normal
+                    latInput.readOnly = true;
+                    lngInput.readOnly = true;
+                    if (bintangFoto) bintangFoto.classList.remove('d-none');
+                    if (bintangCatatan) bintangCatatan.classList.remove('d-none');
+
+                    resetRadiusLogic();
+                }
+            });
+
+            // Trigger saat load pertama kali untuk handle mode Edit
+            $('#petugas').trigger('change');
+        });
     </script>
 @endpush
