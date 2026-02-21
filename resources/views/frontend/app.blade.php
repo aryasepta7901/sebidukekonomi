@@ -48,7 +48,7 @@
                     <ul class="navbar-nav">
                         <li class="nav-item">
 
-                            <a href="/" class="nav-link">Home</a>
+                            <a href="{{ url('/') }}" class="nav-link">Home</a>
                         </li>
                         <li class="nav-item">
 
@@ -90,7 +90,7 @@
 
         <footer class="main-footer text-center">
             Created With ❤️
-            <strong>Tim Integrasi Pengolahan Data (IPD) BPS Kota Lubuk Linggau</strong>
+            <strong>Tim SPBE BPS Kota Lubuk Linggau</strong>
 
         </footer>
     </div>

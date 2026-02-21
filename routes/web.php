@@ -3,6 +3,8 @@
 use App\Http\Controllers\DashboardGroundCheck;
 use App\Http\Controllers\GroundCheckController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KosekaController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -15,10 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Tambahkan ->name('home') di akhir
 Route::get('/', function () {
     return view('landingpage.index');
-});
+})->name('home');
 Route::resource('/GroundCheck', GroundCheckController::class);
 Route::get('/GroundCheck/list-desa/{kdkec}', [GroundCheckController::class, 'getListDesa'])->name('GroundCheck.listDesa');
 Route::get('/DashboardGC/export-data', [DashboardGroundCheck::class, 'exportData'])->name('DashboardGC.exportData');
 Route::resource('/DashboardGC', DashboardGroundCheck::class);
+
+
+Route::get('/koseka/{kdkec}', [KosekaController::class, 'showDetail'])->name('koseka.detail');

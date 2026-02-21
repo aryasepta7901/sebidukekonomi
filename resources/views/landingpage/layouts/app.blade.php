@@ -69,7 +69,7 @@
         <div
             class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
             <div class="logo-container">
-                <a href="index.html" class="logo d-flex align-items-center">
+                <a href="/" class="logo d-flex align-items-center">
                     <h1 class="sitename">SEbiduk</h1>
                 </a>
                 <div class="sub-logo-wrapper">
@@ -78,7 +78,7 @@
             </div>
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="/" class="active">Home</a></li>
                     <li><a href="/GroundCheck">Ground Check</a></li>
 
                 </ul>

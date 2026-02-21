@@ -6,6 +6,7 @@ use App\Models\GroundCheck;
 use App\Models\PetugasGC;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class DashboardGroundCheck extends Controller
 {
@@ -19,7 +20,15 @@ class DashboardGroundCheck extends Controller
         if ($request->ajax()) {
             // 1. Inisialisasi Query: Tambahkan has('petugas') agar hanya ambil yang ada relasinya
             $query = GroundCheck::has('petugas')->with('petugas');
+            // Filter Berdasarkan Kecamatan
+            if ($request->has('filter_kec') && $request->filter_kec !== 'all') {
+                $query->where('prelist_se.kdkec', $request->filter_kec);
+            }
 
+            // Filter Berdasarkan Kelurahan/Desa
+            if ($request->has('filter_desa') && $request->filter_desa !== 'all') {
+                $query->where('prelist_se.kddesa', $request->filter_desa);
+            }
             // 2. Logika Search (Tetap sama)
             if ($request->filled('search.value')) {
                 $searchValue = $request->search['value'];
@@ -75,6 +84,9 @@ class DashboardGroundCheck extends Controller
                     'kddesa'       => $item->kddesa,
                     'catatan'      => \Illuminate\Support\Str::limit($item->catatan, 30),
                     'nama_petugas' => $item->petugas->nama, // Tidak perlu ?? 'N/A' karena sudah difilter
+                    'latitude'       => $item->latitude,
+                    'longitude'      => $item->longitude,
+                    'foto_usaha_url' => $item->foto_usaha ? asset($item->foto_usaha) : null,
                     'aksi_html'    => '
             <div class="btn-group">
                 <button class="btn btn-xs btn-warning btn-gambar" 
@@ -104,8 +116,31 @@ class DashboardGroundCheck extends Controller
             ->orderBy('groundchecks_count', 'desc')
             ->take(10)
             ->get();
+        // 2. Ambil SEMUA Data GeoJSON (Tanpa Filter)
+        $pathKec = public_path('wilayah/final_kec_202521674.geojson');
+        $pathDesa = public_path('wilayah/final_desa_202521674.geojson');
+        $pathSubSLS = public_path('wilayah/final_subsls_202521674.geojson');
 
-        return view('backend.dashboardGroundCheck', compact('topPetugas'));
+        // Gunakan File::get() langsung untuk mengambil seluruh isi file
+        $targetKec = File::exists($pathKec) ? json_decode(File::get($pathKec), true) : ['type' => 'FeatureCollection', 'features' => []];
+        $targetDesa = File::exists($pathDesa) ? json_decode(File::get($pathDesa), true) : ['type' => 'FeatureCollection', 'features' => []];
+        $targetSubSLS = File::exists($pathSubSLS) ? json_decode(File::get($pathSubSLS), true) : ['type' => 'FeatureCollection', 'features' => []];
+
+        // Ambil list unik kecamatan dari geojson atau database untuk dropdown
+        $listKecamatan = collect($targetKec['features'])->map(function ($f) {
+            return (object)[
+                'kdkec' => $f['properties']['kdkec'] ?? $f['properties']['KDKEC'],
+                'nmkec' => $f['properties']['nmkec'] ?? $f['properties']['NMKEC']
+            ];
+        })->unique('kdkec');
+
+        return view('backend.dashboardGroundCheck', compact(
+            'topPetugas',
+            'targetKec',
+            'targetDesa',
+            'targetSubSLS',
+            'listKecamatan'
+        ));
     }
     /**
      * Show the form for creating a new resource.

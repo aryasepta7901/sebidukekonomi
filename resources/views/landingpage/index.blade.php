@@ -444,7 +444,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Barat I</h2>
+                                    <h2 id="1674011">Lubuk Linggau Barat I</h2>
                                     <p class="fst-italic text-muted">
                                         "Masa depanmu dimulai dari apa yang kamu pelajari hari ini."
                                     </p>
@@ -458,6 +458,12 @@
                                             <h3>Ade Suteja</h3>
                                             <span>KOSEKA Barat I</span>
                                         </div>
+                                        {{-- TOMBOL LIHAT WILAYAH --}}
+                                        <a href="{{ route('koseka.detail', '1674011') }}"
+                                            class="btn btn-primary shadow-sm"
+                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
@@ -474,7 +480,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Barat II</h2>
+                                    <h2 id="1674012">Lubuk Linggau Barat II</h2>
                                     <p class="fst-italic text-muted">
                                         "Talk is Cheap. Show me The Code."
                                     </p>
@@ -488,6 +494,12 @@
                                             <h3>M. Arya Septa Kovitra, S.Tr.Stat.</h3>
                                             <span>KOSEKA Barat II</span>
                                         </div>
+                                        {{-- TOMBOL LIHAT WILAYAH --}}
+                                        <a href="{{ route('koseka.detail', '1674012') }}"
+                                            class="btn btn-primary shadow-sm"
+                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
@@ -504,7 +516,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Selatan I</h2>
+                                    <h2 id="1674021">Lubuk Linggau Selatan I</h2>
                                     <p class="fst-italic text-muted">
                                         "Fokuslah mengembangkan diri, agar tak larut dalam opini mereka yang tak peduli."
                                     </p>
@@ -519,6 +531,12 @@
                                             <h3>M. Arif Hidayatullah, A.Md.T.</h3>
                                             <span>KOSEKA Selatan I</span>
                                         </div>
+                                        {{-- TOMBOL LIHAT WILAYAH --}}
+                                        <a href="{{ route('koseka.detail', '1674021') }}"
+                                            class="btn btn-primary shadow-sm"
+                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
@@ -535,7 +553,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Selatan II</h2>
+                                    <h2 id="1674022">Lubuk Linggau Selatan II</h2>
                                     <p class="fst-italic text-muted">
                                         "Don't watch the clock; do what it does. Keep going!"
                                     </p>
@@ -549,6 +567,12 @@
                                             <h3>M. Fathu Rahman, S.Tr.Stat.</h3>
                                             <span>KOSEKA Selatan II</span>
                                         </div>
+                                        {{-- TOMBOL LIHAT WILAYAH --}}
+                                        <a href="{{ route('koseka.detail', '1674022') }}"
+                                            class="btn btn-primary shadow-sm"
+                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
@@ -565,7 +589,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Timur I</h2>
+                                    <h2 id="1674031">Lubuk Linggau Timur I</h2>
                                     <p class="fst-italic text-muted">
                                         "Dedikasi dan ketelitian adalah kunci kualitas data yang berharga."
                                     </p>
@@ -580,6 +604,11 @@
                                             <span>KOSEKA Timur I</span>
                                         </div>
                                     </div>
+                                    {{-- TOMBOL LIHAT WILAYAH --}}
+                                    <a href="{{ route('koseka.detail', '1674031') }}" class="btn btn-primary shadow-sm"
+                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                    </a>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
                                     <div class="featured-img-wrapper">
@@ -595,7 +624,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Timur II</h2>
+                                    <h2 id="1674031">Lubuk Linggau Timur II</h2>
                                     <p class="fst-italic text-muted">
                                         "Bekerja keras dalam diam, biarkan data yang berbicara."
                                     </p>
@@ -610,6 +639,11 @@
                                             <span>KOSEKA Timur II</span>
                                         </div>
                                     </div>
+                                    {{-- TOMBOL LIHAT WILAYAH --}}
+                                    <a href="{{ route('koseka.detail', '1674032') }}" class="btn btn-primary shadow-sm"
+                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                    </a>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
                                     <div class="featured-img-wrapper">
@@ -623,7 +657,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Utara I</h2>
+                                    <h2 id="1674041">Lubuk Linggau Utara I</h2>
                                     <p class="fst-italic text-muted">
                                         "Kualitas data adalah cerminan integritas dalam setiap langkah pendataan."
                                     </p>
@@ -639,6 +673,11 @@
                                             <span>KOSEKA Utara I</span>
                                         </div>
                                     </div>
+                                    {{-- TOMBOL LIHAT WILAYAH --}}
+                                    <a href="{{ route('koseka.detail', '1674041') }}" class="btn btn-primary shadow-sm"
+                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                    </a>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
                                     <div class="featured-img-wrapper">
@@ -654,7 +693,7 @@
                         <div class="testimonial-item">
                             <div class="row">
                                 <div class="col-lg-8">
-                                    <h2>Lubuk Linggau Utara II</h2>
+                                    <h2 id="1674042">Lubuk Linggau Utara II</h2>
                                     <p class="fst-italic text-muted">
                                         "Sinergi lapangan yang kuat melahirkan data statistik yang tepat."
                                     </p>
@@ -669,6 +708,11 @@
                                             <span>KOSEKA Utara II</span>
                                         </div>
                                     </div>
+                                    {{-- TOMBOL LIHAT WILAYAH --}}
+                                    <a href="{{ route('koseka.detail', '1674042') }}" class="btn btn-primary shadow-sm"
+                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                    </a>
                                 </div>
                                 <div class="col-lg-4 d-none d-lg-block">
                                     <div class="featured-img-wrapper">
@@ -688,4 +732,53 @@
             </div>
         </div>
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Ambil bulan sekarang (0 = Januari, 1 = Februari, dst)
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1; // Januari jadi 1, Februari jadi 2
+
+            let targetTabId = "";
+
+            // 2. Tentukan target ID berdasarkan bulan
+            // Kita sesuaikan dengan struktur tab Anda (1-5 bulan spesifik, 6 untuk Juni-Juli)
+            if (currentMonth === 1) {
+                targetTabId = "tab-1"; // Januari
+            } else if (currentMonth === 2) {
+                targetTabId = "tab-2"; // Februari
+            } else if (currentMonth === 3) {
+                targetTabId = "tab-3"; // Maret
+            } else if (currentMonth === 4) {
+                targetTabId = "tab-4"; // April
+            } else if (currentMonth === 5) {
+                targetTabId = "tab-5"; // Mei
+            } else if (currentMonth >= 6 && currentMonth <= 7) {
+                targetTabId = "tab-6"; // Juni - Juli
+            } else if (currentMonth > 7) {
+                targetTabId = "tab-6"; // Jika sudah lewat Juli, tetap di tab terakhir
+            }
+
+            // 3. Eksekusi perpindahan tab jika target ditemukan
+            if (targetTabId) {
+                const activeTab = document.getElementById(targetTabId);
+                if (activeTab) {
+                    // Hapus class 'active' dari tab default (Januari)
+                    document.querySelectorAll('.schedule .nav-link').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    document.querySelectorAll('.schedule .tab-pane').forEach(el => {
+                        el.classList.remove('show', 'active');
+                    });
+
+                    // Aktifkan tab yang sesuai bulan sekarang
+                    activeTab.classList.add('active');
+                    const targetPaneId = activeTab.getAttribute('data-bs-target');
+                    const targetPane = document.querySelector(targetPaneId);
+                    if (targetPane) {
+                        targetPane.classList.add('show', 'active');
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
