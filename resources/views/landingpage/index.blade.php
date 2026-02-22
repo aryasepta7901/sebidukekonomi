@@ -63,14 +63,15 @@
 
                 <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
                     <div class="hero-image-wrapper">
-                        <img src="{{ asset('img/depan.JPG') }}" alt="SEbiduk Ekonomi Dashboard"
-                            class="img-fluid hero-image">
-
+                        <img src="{{ asset('img/landingpage.png') }}" alt="SEbiduk Ekonomi Dashboard"
+                            class="img-fluid hero-image ">
+                        {{-- 
                         <div class="floating-badges">
                             <div class="badge-item" data-aos="zoom-in" data-aos-delay="600">
                                 <i class="bi bi-search"></i>
                                 <span>Ground Checking</span>
                             </div>
+
                             <div class="badge-item" data-aos="zoom-in" data-aos-delay="650">
                                 <i class="bi bi-exclamation-triangle"></i>
                                 <span>Deteksi Anomali</span>
@@ -79,7 +80,7 @@
                                 <i class="bi bi-check-all"></i>
                                 <span>Validasi Data</span>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -416,12 +417,38 @@
             </div>
         </div>
     </section>
+
     <section id="testimonials" class="testimonials section light-background">
         <div class="container section-title" data-aos="fade-up">
             <h2>Profil KOSEKA & Wilayah Tugas</h2>
             <p>Koordinator Statistik Kecamatan untuk Sensus Ekonomi 2026 Kota Lubuklinggau</p>
         </div>
 
+        <div class="container mb-3">
+            <div class="row justify-content-center">
+                <div class="col-md-5 col-lg-4">
+                    <div class="card shadow-lg border-0"
+                        style="background: linear-gradient(45deg, #fd7e14, #ff9800); color: white; border-radius: 15px;">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-2">
+                                <i class="bi bi-graph-up-arrow" style="font-size: 2rem; opacity: 0.8;"></i>
+                            </div>
+                            <h5 class="card-title fw-light text-uppercase tracking-wider">Usaha Aktif (SE) di Kota Lubuk
+                                Linggau</h5>
+                            <h2 class="display-3 fw-bold my-3">
+                                {{ number_format($totalUsahaAktif ?? 0, 0, ',', '.') }}
+                            </h2>
+                            <div
+                                style="background: rgba(255,255,255,0.2); border-radius: 50px; padding: 5px 15px; display: inline-block;">
+                                <p class="mb-0 small">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Hasil Ground Checking Matcha Mobile 2026
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container" data-aos="fade-up" data-aos-delay="100">
             <div class="testimonials-slider swiper init-swiper">
                 <script type="application/json" class="swiper-config">
@@ -440,289 +467,61 @@
             </script>
 
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674011">Lubuk Linggau Barat I</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Masa depanmu dimulai dari apa yang kamu pelajari hari ini."
-                                    </p>
-                                    <p>
-                                        Bertanggung jawab dalam koordinasi lapangan, pengawasan pendaftaran usaha, dan
-                                        menjamin kualitas data di seluruh kelurahan wilayah Lubuk Linggau Barat I.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/ade.png') }}" class="profile-img" alt="Ade Suteja">
-                                        <div class="profile-info">
-                                            <h3>Ade Suteja</h3>
-                                            <span>KOSEKA Barat I</span>
-                                        </div>
-                                        {{-- TOMBOL LIHAT WILAYAH --}}
-                                        <a href="{{ route('koseka.detail', '1674011') }}"
-                                            class="btn btn-primary shadow-sm"
-                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/ade.png') }}" class="featured-img"
-                                            alt="Ade Suteja Large">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @foreach ($listKoseka as $koseka)
+                        <div class="swiper-slide">
+                            <div class="testimonial-item">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <h2 id="{{ $koseka['id'] }}">{{ $koseka['wilayah'] }}</h2>
+                                        <p class="fst-italic text-muted">{{ $koseka['quote'] }}</p>
 
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674012">Lubuk Linggau Barat II</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Talk is Cheap. Show me The Code."
-                                    </p>
-                                    <p>
-                                        Memastikan integritas data sensus ekonomi di wilayah Barat II melalui pemantauan
-                                        intensif dan dukungan teknis kepada para petugas lapangan.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/arya_fix.png') }}" class="profile-img" alt="Arya Septa">
-                                        <div class="profile-info">
-                                            <h3>M. Arya Septa Kovitra, S.Tr.Stat.</h3>
-                                            <span>KOSEKA Barat II</span>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="badge-rekap p-2 px-3 shadow-sm d-flex align-items-center"
+                                                style="background: #fff; border: 1px solid #fd7e14; border-radius: 10px; color: #333;">
+                                                <div class="me-3 text-center">
+                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">USAHA
+                                                        AKTIF</small>
+                                                    <span class="fw-bold" style="color: #fd7e14; font-size: 1.2rem;">
+                                                        {{ number_format($rekapPerKoseka[$koseka['id']] ?? 0, 0, ',', '.') }}
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-shop-window"
+                                                    style="font-size: 1.5rem; color: #fd7e14;"></i>
+                                            </div>
                                         </div>
-                                        {{-- TOMBOL LIHAT WILAYAH --}}
-                                        <a href="{{ route('koseka.detail', '1674012') }}"
-                                            class="btn btn-primary shadow-sm"
-                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/arya_fix.png') }}" class="featured-img"
-                                            alt="Arya Septa Large">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674021">Lubuk Linggau Selatan I</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Fokuslah mengembangkan diri, agar tak larut dalam opini mereka yang tak peduli."
-                                    </p>
-                                    <p>
-                                        Mengawal jalannya Sensus Ekonomi 2026 di wilayah Selatan I demi mewujudkan basis
-                                        data ekonomi yang akurat dan terpercaya.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/arif.png') }}" class="profile-img"
-                                            alt="Arif Hidayatullah">
-                                        <div class="profile-info">
-                                            <h3>M. Arif Hidayatullah, A.Md.T.</h3>
-                                            <span>KOSEKA Selatan I</span>
-                                        </div>
-                                        {{-- TOMBOL LIHAT WILAYAH --}}
-                                        <a href="{{ route('koseka.detail', '1674021') }}"
-                                            class="btn btn-primary shadow-sm"
-                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/arif.png') }}" class="featured-img"
-                                            alt="Arif Hidayatullah Large">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674022">Lubuk Linggau Selatan II</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Don't watch the clock; do what it does. Keep going!"
-                                    </p>
-                                    <p>
-                                        Berkomitmen tinggi dalam mensukseskan pendataan ekonomi di wilayah Selatan II dengan
-                                        koordinasi tim yang solid.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/fathur.png') }}" class="profile-img" alt="Fathu Rahman">
-                                        <div class="profile-info">
-                                            <h3>M. Fathu Rahman, S.Tr.Stat.</h3>
-                                            <span>KOSEKA Selatan II</span>
-                                        </div>
-                                        {{-- TOMBOL LIHAT WILAYAH --}}
-                                        <a href="{{ route('koseka.detail', '1674022') }}"
-                                            class="btn btn-primary shadow-sm"
-                                            style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                            <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/fathur.png') }}" class="featured-img"
-                                            alt="Fathu Rahman Large">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                        <p>{{ $koseka['deskripsi'] }}</p>
 
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674031">Lubuk Linggau Timur I</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Dedikasi dan ketelitian adalah kunci kualitas data yang berharga."
-                                    </p>
-                                    <p>
-                                        Bertanggung jawab penuh dalam mengoordinasikan pendataan ekonomi di wilayah Timur I
-                                        untuk memastikan setiap unit usaha tercatat dengan akurat.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/novi.png') }}" class="profile-img" alt="Novi Marlina">
-                                        <div class="profile-info">
-                                            <h3>Novi Marlina, S.Si.</h3>
-                                            <span>KOSEKA Timur I</span>
+                                        <div class="profile d-flex align-items-center">
+                                            <img src="{{ asset('img/' . $koseka['foto']) }}" class="profile-img"
+                                                alt="{{ $koseka['nama'] }}">
+                                            <div class="profile-info">
+                                                <h3>{{ $koseka['nama'] }}</h3>
+                                                <span>{{ $koseka['jabatan'] }}</span>
+                                            </div>
+                                            <a href="{{ route('koseka.detail', $koseka['id']) }}"
+                                                class="btn btn-primary shadow-sm ms-auto"
+                                                style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
+                                                <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
+                                            </a>
                                         </div>
                                     </div>
-                                    {{-- TOMBOL LIHAT WILAYAH --}}
-                                    <a href="{{ route('koseka.detail', '1674031') }}" class="btn btn-primary shadow-sm"
-                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                    </a>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/novi.png') }}" class="featured-img"
-                                            alt="Novi Marlina Large">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674031">Lubuk Linggau Timur II</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Bekerja keras dalam diam, biarkan data yang berbicara."
-                                    </p>
-                                    <p>
-                                        Mengawal kualitas pendaftaran usaha dan sinergi tim lapangan di wilayah Timur II
-                                        guna mensukseskan Sensus Ekonomi 2026.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/yessy.png') }}" class="profile-img" alt="Yessy">
-                                        <div class="profile-info">
-                                            <h3>Yessy Zaliah Purnama Sari, A.Md.</h3>
-                                            <span>KOSEKA Timur II</span>
+                                    <div class="col-lg-4 d-none d-lg-block">
+                                        <div class="featured-img-wrapper">
+                                            <img src="{{ asset('img/' . $koseka['foto_wil']) }}" class="featured-img"
+                                                alt="{{ $koseka['nama'] }} Large">
                                         </div>
-                                    </div>
-                                    {{-- TOMBOL LIHAT WILAYAH --}}
-                                    <a href="{{ route('koseka.detail', '1674032') }}" class="btn btn-primary shadow-sm"
-                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                    </a>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/yessy.png') }}" class="featured-img" alt="Yessy Large">
+                                        <p class="mt-3 text-center featured-name-caption">
+                                            {{ $koseka['korwil1'] }} — <strong>{{ $koseka['koseka'] }}</strong> —
+                                            {{ $koseka['korwil2'] }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674041">Lubuk Linggau Utara I</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Kualitas data adalah cerminan integritas dalam setiap langkah pendataan."
-                                    </p>
-                                    <p>
-                                        Memastikan kelancaran koordinasi dan akurasi cakupan unit usaha di wilayah Utara I
-                                        demi mewujudkan basis data ekonomi yang handal dan terpercaya.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/luluk.png') }}" class="profile-img"
-                                            alt="Luluk Indryas Mufida">
-                                        <div class="profile-info">
-                                            <h3>Luluk Indryas Mufida, S.Tr.Stat.</h3>
-                                            <span>KOSEKA Utara I</span>
-                                        </div>
-                                    </div>
-                                    {{-- TOMBOL LIHAT WILAYAH --}}
-                                    <a href="{{ route('koseka.detail', '1674041') }}" class="btn btn-primary shadow-sm"
-                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                    </a>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/luluk.png') }}" class="featured-img"
-                                            alt="Luluk Indryas Mufida Large">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="swiper-slide">
-                        <div class="testimonial-item">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h2 id="1674042">Lubuk Linggau Utara II</h2>
-                                    <p class="fst-italic text-muted">
-                                        "Sinergi lapangan yang kuat melahirkan data statistik yang tepat."
-                                    </p>
-                                    <p>
-                                        Mengawasi jalannya pendaftaran usaha di wilayah Utara II dengan pendekatan strategis
-                                        untuk mendukung kesuksesan sensus ekonomi yang komprehensif.
-                                    </p>
-                                    <div class="profile d-flex align-items-center">
-                                        <img src="{{ asset('img/raden.png') }}" class="profile-img" alt="Raden Mulia">
-                                        <div class="profile-info">
-                                            <h3>Raden Mulia, S.Tr.Stat.</h3>
-                                            <span>KOSEKA Utara II</span>
-                                        </div>
-                                    </div>
-                                    {{-- TOMBOL LIHAT WILAYAH --}}
-                                    <a href="{{ route('koseka.detail', '1674042') }}" class="btn btn-primary shadow-sm"
-                                        style="background-color: #fd7e14; border: none; padding: 10px 25px; border-radius: 30px;">
-                                        <i class="bi bi-geo-alt-fill me-2"></i> Lihat Wilayah
-                                    </a>
-                                </div>
-                                <div class="col-lg-4 d-none d-lg-block">
-                                    <div class="featured-img-wrapper">
-                                        <img src="{{ asset('img/raden.png') }}" class="featured-img"
-                                            alt="Raden Mulia Large">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
 
                 <div class="swiper-navigation w-100 d-flex align-items-center justify-content-center">

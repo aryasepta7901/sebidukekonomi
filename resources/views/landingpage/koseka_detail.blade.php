@@ -9,23 +9,27 @@
         }
 
         .info.legend {
-            padding: 10px 15px;
-            font: 14px/16px Arial, Helvetica, sans-serif;
-            background: rgba(255, 255, 255, 0.9);
+            line-height: 18px;
+            color: #555;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            line-height: 24px;
-            color: #333;
+            margin-bottom: 10px;
+            /* Jarak antar legenda */
         }
 
         .info.legend i {
-            width: 20px;
-            height: 14px;
+            width: 18px;
+            height: 18px;
             float: left;
-            margin-right: 10px;
-            margin-top: 5px;
-            opacity: 0.8;
-            border: 1px solid #999;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+
+        .legend-line {
+            height: 4px !important;
+            margin-top: 7px !important;
         }
 
         .legend-sls {
@@ -61,9 +65,8 @@
                 </select>
             </div>
         </div>
-
         <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="card shadow-sm border-0 text-center p-3">
                     <h6 class="text-muted mb-1">Kecamatan</h6>
                     <h4 class="fw-bold mb-0 text-primary" id="stat-kec">-</h4>
@@ -71,19 +74,26 @@
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm border-0 text-center p-3">
-                    <h6 class="text-muted mb-1">Kelurahan Terpilih</h6>
+                    <h6 class="text-muted mb-1">Kelurahan</h6>
                     <h4 class="fw-bold mb-0 text-info" id="stat-nama-desa">Semua</h4>
                 </div>
             </div>
             <div class="col-md-3">
+                <div class="card shadow-sm border-0 text-center p-3"
+                    style="background: #fff5eb; border: 1px solid #fd7e14 !important;">
+                    <h6 class="text-muted mb-1">Usaha Aktif (SE)</h6>
+                    <h4 class="fw-bold mb-0" style="color: #fd7e14;" id="stat-usaha">0</h4>
+                </div>
+            </div>
+            <div class="col-md-2">
                 <div class="card shadow-sm border-0 text-center p-3">
                     <h6 class="text-muted mb-1">Total SLS</h6>
                     <h4 class="fw-bold mb-0 text-warning" id="stat-sls">0</h4>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="card shadow-sm border-0 text-center p-3">
-                    <h6 class="text-muted mb-1">Total Sub-SLS</h6>
+                    <h6 class="text-muted mb-1">Sub-SLS</h6>
                     <h4 class="fw-bold mb-0 text-danger" id="stat-subsls">0</h4>
                 </div>
             </div>
@@ -100,6 +110,8 @@
         const dataKec = @json($targetKec);
         const dataDesa = @json($targetDesa);
         const dataSubSLS = @json($targetSubSLS);
+        const totalKecamatan = {{ $totalKecamatan }};
+        const rekapKelurahan = @json($rekapKelurahan);
 
         const sourceCRS = 'EPSG:3857';
         const destCRS = 'EPSG:4326';
@@ -110,6 +122,88 @@
         var layerGroupKec = L.layerGroup().addTo(map);
         var layerGroupDesa = L.layerGroup().addTo(map);
         var layerGroupSLS = L.layerGroup().addTo(map);
+
+
+
+        function refreshMap(kddesaFilter = 'all') {
+            layerGroupKec.clearLayers();
+            layerGroupDesa.clearLayers();
+            layerGroupSLS.clearLayers();
+
+            const styleKec = {
+                "color": "#d35400",
+                "weight": 6,
+                "fillOpacity": 0,
+                "interactive": false // Agar klik tembus ke bawah (SLS)
+            };
+
+            const styleDesa = function(feature) {
+                let kode = String(feature.properties.kddesa || feature.properties.KDDESA).padStart(3, '0');
+                let jumlah = rekapKelurahan[kode] || 0;
+                return {
+                    "color": "#2980b9",
+                    "weight": 2.5,
+                    "fillColor": getColorHeatmap(jumlah),
+                    "fillOpacity": 0.6,
+                    "interactive": false // PENTING: Agar klik "tembus" ke layer SLS di atasnya
+                };
+            };
+
+            const styleSLS = {
+                "color": "#27ae60",
+                "weight": 2, // Pertebal sedikit agar mudah diklik
+                "dashArray": "5, 5",
+                "fillColor": "transparent", // Gunakan transparan daripada fillOpacity: 0
+                "fillOpacity": 0.1, // Beri sedikit opacity agar area di dalam SLS bisa diklik
+                "interactive": true
+            };
+
+            // Filter Data (Gunakan slice(-3) untuk memastikan kecocokan kode)
+            const filteredDesa = (kddesaFilter === 'all') ? dataDesa : {
+                ...dataDesa,
+                features: dataDesa.features.filter(f =>
+                    String(f.properties.kddesa || f.properties.KDDESA).slice(-3) == String(kddesaFilter).slice(-3)
+                )
+            };
+
+            const filteredSLS = (kddesaFilter === 'all') ? dataSubSLS : {
+                ...dataSubSLS,
+                features: dataSubSLS.features.filter(f =>
+                    String(f.properties.kddesa || f.properties.KDDESA).slice(-3) == String(kddesaFilter).slice(-3)
+                )
+            };
+
+            // URUTAN MENGGAMBAR:
+            // 1. Gambar Desa paling bawah (sebagai background heatmap)
+            drawGeoJSON(filteredDesa, styleDesa, 'desa', layerGroupDesa);
+
+            // 2. Gambar SLS di atasnya (agar Popup berada di posisi paling depan/atas)
+            drawGeoJSON(filteredSLS, styleSLS, 'sls', layerGroupSLS);
+
+            // 3. Gambar Kecamatan paling atas sebagai bingkai
+            drawGeoJSON(dataKec, styleKec, 'kec', layerGroupKec);
+
+            // Auto Zoom
+            if (layerGroupDesa.getLayers().length > 0) {
+                const bounds = L.featureGroup(layerGroupDesa.getLayers()).getBounds();
+                map.flyToBounds(bounds, {
+                    padding: [20, 20]
+                });
+            }
+
+            updateDashboard(kddesaFilter);
+        }
+
+        // Fungsi untuk menentukan warna heatmap berdasarkan jumlah usaha
+        function getColorHeatmap(d) {
+            return d > 1000 ? '#800026' :
+                d > 500 ? '#BD0026' :
+                d > 200 ? '#E31A1C' :
+                d > 100 ? '#FC4E2A' :
+                d > 50 ? '#FD8D3C' :
+                d > 0 ? '#FEB24C' :
+                '#FFEDA0'; // Warna dasar jika data 0
+        }
 
         function drawGeoJSON(data, style, type, group) {
             if (!data || !data.features || data.features.length === 0) return null;
@@ -199,101 +293,57 @@
             }).addTo(group);
         }
 
-        function refreshMap(kddesaFilter = 'all') {
-            layerGroupKec.clearLayers();
-            layerGroupDesa.clearLayers();
-            layerGroupSLS.clearLayers();
-
-            const styleKec = {
-                "color": "#d35400",
-                "weight": 6,
-                "fillOpacity": 0
-            };
-            const styleDesa = {
-                "color": "#2980b9",
-                "weight": 3,
-                "fillColor": "#3498db",
-                "fillOpacity": 0.1
-            };
-            const styleSLS = {
-                "color": "#27ae60",
-                "weight": 1.5,
-                "dashArray": "5, 5",
-                "fillColor": "#2ecc71",
-                "fillOpacity": 0.3
-            };
-
-            let filteredDesa = JSON.parse(JSON.stringify(dataDesa));
-            let filteredSLS = JSON.parse(JSON.stringify(dataSubSLS));
-
-            if (kddesaFilter !== 'all') {
-                filteredDesa.features = dataDesa.features.filter(f =>
-                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesaFilter)
-                );
-                filteredSLS.features = dataSubSLS.features.filter(f =>
-                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesaFilter)
-                );
-            }
-
-            // Gambar semua layer
-            let lKec = drawGeoJSON(dataKec, styleKec, 'kec', layerGroupKec);
-            let lDesa = drawGeoJSON(filteredDesa, styleDesa, 'desa', layerGroupDesa);
-            drawGeoJSON(filteredSLS, styleSLS, 'sls', layerGroupSLS);
-
-            // LOGIKA ZOOM OUT / ZOOM IN
-            setTimeout(() => {
-                let targetBounds;
-
-                if (kddesaFilter === 'all') {
-                    // Jika pilih "Semua", ambil batas dari layer Kecamatan agar Zoom Out
-                    if (lKec) targetBounds = lKec.getBounds();
-                } else {
-                    // Jika pilih Kelurahan spesifik, ambil batas dari layer Desa tersebut
-                    if (lDesa) targetBounds = lDesa.getBounds();
-                }
-
-                if (targetBounds && targetBounds.isValid()) {
-                    // flyToBounds memberikan efek animasi transisi yang lebih bagus
-                    map.flyToBounds(targetBounds, {
-                        padding: [40, 40],
-                        duration: 1.5 // Durasi animasi dalam detik
-                    });
-                }
-            }, 300);
-
-            updateDashboard(kddesaFilter);
-        }
-
         function updateDashboard(kddesa) {
-            if (dataKec.features && dataKec.features.length > 0) {
-                let pKec = dataKec.features[0].properties;
-                document.getElementById('stat-kec').innerText = pKec.nmkec || pKec.NMKEC || "-";
-            }
-
             let filteredSLS = [];
             let labelDesa = "";
+            let jumlahUsaha = 0;
+
+            // --- TAMBAHKAN LOGIKA UNTUK NAMA KECAMATAN DI SINI ---
+            if (dataKec && dataKec.features && dataKec.features.length > 0) {
+                // Mengambil properti dari fitur pertama karena ini sudah di-filter per kecamatan di Controller
+                let propKec = dataKec.features[0].properties;
+                document.getElementById('stat-kec').innerText = propKec.nmkec || propKec.NMKEC || "Kecamatan";
+            }
 
             if (kddesa === 'all') {
                 filteredSLS = dataSubSLS.features || [];
                 labelDesa = (dataDesa.features ? dataDesa.features.length : 0) + " Kelurahan";
                 document.getElementById('active-location').innerText = "Seluruh Wilayah Kecamatan";
+
+                // Ambil total kecamatan yang dihitung di Controller
+                jumlahUsaha = totalKecamatan;
             } else {
+                // Filter SLS berdasarkan kddesa (biasanya 3 digit terakhir)
                 filteredSLS = dataSubSLS.features.filter(f =>
-                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesa)
+                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesa).slice(-3)
                 );
+
+                // Cari nama desa dari GeoJSON desa
                 let dObj = dataDesa.features.find(f =>
-                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesa)
+                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesa).slice(-3)
                 );
+
                 labelDesa = dObj ? (dObj.properties.nmdesa || dObj.properties.NMDESA) : "-";
                 document.getElementById('active-location').innerText = "Kelurahan " + labelDesa;
+
+                // Ambil data rekap usaha dari Excel yang dikirim Controller
+                let shortKD = String(kddesa).slice(-3);
+                jumlahUsaha = rekapKelurahan[shortKD] || 0;
             }
 
+            // Update elemen UI
             document.getElementById('stat-nama-desa').innerText = labelDesa;
+
+            // Update elemen Usaha Aktif (pastikan ID ini ada di HTML Card Anda)
+            const elUsaha = document.getElementById('stat-usaha');
+            if (elUsaha) {
+                elUsaha.innerText = jumlahUsaha.toLocaleString('id-ID');
+            }
+
             let uniqueSLS = new Set(filteredSLS.map(f => f.properties.idsls || f.properties.IDSLS));
             document.getElementById('stat-sls').innerText = uniqueSLS.size;
-            document.getElementById('stat-subsls').innerText = filteredSLS.length;
+            document.getElementById('stat-subsls').innerText = filteredSLS.length - uniqueSLS.size;
         }
-
         document.addEventListener('DOMContentLoaded', function() {
             const select = document.getElementById('filter-desa');
             if (dataDesa.features) {
@@ -315,10 +365,26 @@
         });
         legend.onAdd = function() {
             var div = L.DomUtil.create('div', 'info legend');
-            div.innerHTML =
-                '<strong>Legenda</strong><br><i style="background: #d35400; height: 3px;"></i> Batas Kec<br><i style="background: rgba(52, 152, 219, 0.2); border: 2px solid #2980b9;"></i> Batas Kelurahan<br><i class="legend-sls"></i> Batas SLS';
+            var grades = [0, 50, 100, 200, 500, 1000];
+
+            div.innerHTML = '<strong>Legenda & Kepadatan</strong><br>';
+            div.innerHTML +=
+                '<i style="background: #d35400; height: 3px; width:18px; display:inline-block;"></i> Batas Kec<br>';
+            // Tambahkan baris ini untuk Batas Kelurahan
+            div.innerHTML +=
+                '<i style="border: 2px solid #2980b9; height: 10px; width:18px; display:inline-block; background:rgba(41, 128, 185, 0.2)"></i> Batas Kelurahan<br>';
+            div.innerHTML +=
+                '<i class="legend-sls" style="border: 1.5px dashed #27ae60; width:18px; height:0px; display:inline-block;"></i> Batas SLS/ SUB SLS<br><hr style="margin:5px 0">';
+
+            for (var i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + getColorHeatmap(grades[i] + 1) +
+                    '; width:18px; height:18px; float:left; margin-right:8px; opacity:0.7;"></i> ' +
+                    grades[i] + (grades[i + 1] ? '–' + grades[i + 1] + '<br>' : '+');
+            }
             return div;
         };
+
         legend.addTo(map);
     </script>
 @endsection

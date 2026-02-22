@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 
 class KosekaController extends Controller
 {
@@ -33,13 +34,53 @@ class KosekaController extends Controller
             $data['features'] = array_values($data['features']);
             return $data;
         };
+        // Logika Ambil Data Excel
+        $sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfA-GmgjJmgK4Hh3ZnIq6MWj4OX0pFUkYecLNbWEtM9tvcXgUaIdmLPxi3CJ3wHQ/pub?output=csv";
+        $rekapKelurahan = [];
+        $totalKecamatan = 0;
 
+        try {
+            $response = Http::timeout(10)->get($sheetUrl);
+            if ($response->successful()) {
+                $rows = str_getcsv($response->body(), "\n");
+                $header = str_getcsv(array_shift($rows), ",");
+                $cleanHeader = array_map(fn($h) => strtolower(trim(preg_replace('/[^A-Za-z0-9_]/', '', $h))), $header);
+
+                $idxResult = array_search('gcs_result', $cleanHeader);
+                $idxWilayah = array_search('kode_wilayah', $cleanHeader);
+
+                foreach ($rows as $row) {
+                    $data = str_getcsv($row, ",");
+                    // Pastikan kolom gcs_result dan kode_wilayah tersedia
+                    if (isset($data[$idxResult]) && trim($data[$idxResult]) == '1') {
+                        $kodeFull = trim($data[$idxWilayah] ?? '');
+
+                        if (str_starts_with($kodeFull, $kdkec)) {
+                            $totalKecamatan++;
+                            // Ambil 3 digit desa (misal dari 1674011001 diambil 001)
+                            // Menggunakan substr dari belakang (-3) lebih aman jika panjang string tidak konsisten
+                            $kodeDesa = substr($kodeFull, -3);
+                            $rekapKelurahan[$kodeDesa] = ($rekapKelurahan[$kodeDesa] ?? 0) + 1;
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+        }
         $targetKec = $filterGeoJSON($pathKec, 'kdkec', $kdkec);
         $targetDesa = $filterGeoJSON($pathDesa, 'kdkec', $kdkec);
         $targetSLS = $filterGeoJSON($pathSLS, 'kdkec', $kdkec);
         $targetSubSLS = $filterGeoJSON($pathSubSLS, 'kdkec', $kdkec);
 
-        return view('landingpage.koseka_detail', compact('targetKec', 'targetDesa', 'targetSLS', 'targetSubSLS', 'kdkec'));
+        return view('landingpage.koseka_detail', compact(
+            'targetKec',
+            'targetDesa',
+            'targetSLS',
+            'targetSubSLS',
+            'kdkec',
+            'totalKecamatan',
+            'rekapKelurahan'
+        ));
     }
 
     /**
