@@ -34,7 +34,7 @@ class KosekaController extends Controller
             $data['features'] = array_values($data['features']);
             return $data;
         };
-        // Logika Ambil Data Excel
+        // Logika Ambil Data Excel untuk Detail Kecamatan
         $sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfA-GmgjJmgK4Hh3ZnIq6MWj4OX0pFUkYecLNbWEtM9tvcXgUaIdmLPxi3CJ3wHQ/pub?output=csv";
         $rekapKelurahan = [];
         $totalKecamatan = 0;
@@ -43,29 +43,49 @@ class KosekaController extends Controller
             $response = Http::timeout(10)->get($sheetUrl);
             if ($response->successful()) {
                 $rows = str_getcsv($response->body(), "\n");
-                $header = str_getcsv(array_shift($rows), ",");
-                $cleanHeader = array_map(fn($h) => strtolower(trim(preg_replace('/[^A-Za-z0-9_]/', '', $h))), $header);
 
-                $idxResult = array_search('gcs_result', $cleanHeader);
-                $idxWilayah = array_search('kode_wilayah', $cleanHeader);
+                // 1. Lewati baris metadata pertama
+                array_shift($rows);
+
+                // 2. Ambil header asli
+                $header = str_getcsv(array_shift($rows), ",");
+                $cleanHeader = array_map(fn($h) => trim($h), $header);
+
+                // 3. Cari index kolom kode_wilayah dan kolom hasil "1"
+                $idxId = array_search('kode_wilayah', $cleanHeader);
+                $idxValue = array_search('1', $cleanHeader);
 
                 foreach ($rows as $row) {
                     $data = str_getcsv($row, ",");
-                    // Pastikan kolom gcs_result dan kode_wilayah tersedia
-                    if (isset($data[$idxResult]) && trim($data[$idxResult]) == '1') {
-                        $kodeFull = trim($data[$idxWilayah] ?? '');
 
+                    if (isset($data[$idxId]) && isset($data[$idxValue])) {
+                        $kodeFull = trim($data[$idxId]);
+                        $jumlah = (int) preg_replace('/[^0-9]/', '', $data[$idxValue]);
+
+                        if ($jumlah <= 0) continue;
+
+                        // 4. Cek apakah kode wilayah diawali dengan kode kecamatan ($kdkec)
                         if (str_starts_with($kodeFull, $kdkec)) {
-                            $totalKecamatan++;
-                            // Ambil 3 digit desa (misal dari 1674011001 diambil 001)
-                            // Menggunakan substr dari belakang (-3) lebih aman jika panjang string tidak konsisten
-                            $kodeDesa = substr($kodeFull, -3);
-                            $rekapKelurahan[$kodeDesa] = ($rekapKelurahan[$kodeDesa] ?? 0) + 1;
+
+                            // A. Jika kodenya tepat sama dengan kode kecamatan (Parent)
+                            if ($kodeFull === $kdkec) {
+                                $totalKecamatan += $jumlah;
+                            }
+
+                            // B. Jika kodenya adalah kelurahan (Child, biasanya 10 digit)
+                            elseif (strlen($kodeFull) > 7) {
+                                $totalKecamatan += $jumlah;
+
+                                // Ambil 3 digit terakhir untuk ID kelurahan (misal 001)
+                                $kodeDesa = substr($kodeFull, -3);
+                                $rekapKelurahan[$kodeDesa] = ($rekapKelurahan[$kodeDesa] ?? 0) + $jumlah;
+                            }
                         }
                     }
                 }
             }
         } catch (\Exception $e) {
+            // Log error jika diperlukan: Log::error($e->getMessage());
         }
         $targetKec = $filterGeoJSON($pathKec, 'kdkec', $kdkec);
         $targetDesa = $filterGeoJSON($pathDesa, 'kdkec', $kdkec);

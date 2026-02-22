@@ -5,6 +5,7 @@ use App\Http\Controllers\GroundCheckController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KosekaController;
 use App\Http\Controllers\LandingPageController;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,9 @@ Route::resource('/GroundCheck', GroundCheckController::class);
 Route::get('/GroundCheck/list-desa/{kdkec}', [GroundCheckController::class, 'getListDesa'])->name('GroundCheck.listDesa');
 Route::get('/DashboardGC/export-data', [DashboardGroundCheck::class, 'exportData'])->name('DashboardGC.exportData');
 Route::resource('/DashboardGC', DashboardGroundCheck::class);
-
+Route::get('/updaterekap', function () {
+    Cache::forget('rekap_sheets_koseka');
+    return "Cache dihapus! Silakan buka kembali halaman utama untuk memicu download data terbaru.";
+});
 
 Route::get('/koseka/{kdkec}', [KosekaController::class, 'showDetail'])->name('koseka.detail');

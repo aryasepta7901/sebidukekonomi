@@ -15,37 +15,60 @@ class LandingPageController extends Controller
      */
     public function index()
     {
-        $rekapSheets = Cache::remember('rekap_sheets_koseka', 60, function () {
+        // 1. Coba ambil data dari cache selamanya
+        $rekapSheets = Cache::get('rekap_sheets_koseka');
+
+        // 2. Jika cache kosong (belum pernah download), baru kita jalankan download
+        if (!$rekapSheets) {
             $sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfA-GmgjJmgK4Hh3ZnIq6MWj4OX0pFUkYecLNbWEtM9tvcXgUaIdmLPxi3CJ3wHQ/pub?output=csv";
             $perKoseka = [];
-            $total = 0;
+            $totalSemua = 0;
 
             try {
-                // Gunakan Http::get agar lebih ringan dan cepat
-                $response = Http::timeout(5)->get($sheetUrl);
+                $response = Http::timeout(15)->get($sheetUrl);
+
                 if ($response->successful()) {
                     $rows = str_getcsv($response->body(), "\n");
+                    array_shift($rows);
                     $header = str_getcsv(array_shift($rows), ",");
-                    $cleanHeader = array_map(fn($h) => strtolower(trim($h)), $header);
+                    $cleanHeader = array_map(fn($h) => trim($h), $header);
 
-                    $idxResult = array_search('gcs_result', $cleanHeader);
-                    $idxWilayah = array_search('kode_wilayah', $cleanHeader);
+                    $idxId = array_search('kode_wilayah', $cleanHeader);
+                    $idxValue = array_search('1', $cleanHeader);
 
                     foreach ($rows as $row) {
                         $data = str_getcsv($row, ",");
-                        if (isset($data[$idxResult]) && trim($data[$idxResult]) == '1') {
-                            $total++;
-                            $kodeKoseka = substr(trim($data[$idxWilayah]), 0, 7);
-                            $perKoseka[$kodeKoseka] = ($perKoseka[$kodeKoseka] ?? 0) + 1;
+                        if (isset($data[$idxId]) && isset($data[$idxValue])) {
+                            $kode = trim($data[$idxId]);
+                            $jumlah = (int) preg_replace('/[^0-9]/', '', $data[$idxValue]);
+
+                            if (strtolower($kode) === 'grand total' || $jumlah <= 0) continue;
+
+                            $totalSemua += $jumlah;
+
+                            if (strlen($kode) === 7) {
+                                $perKoseka[$kode] = ($perKoseka[$kode] ?? 0) + $jumlah;
+                            }
+
+                            if (strlen($kode) > 7) {
+                                $kodeParent = substr($kode, 0, 7);
+                                $perKoseka[$kodeParent] = ($perKoseka[$kodeParent] ?? 0) + $jumlah;
+                            }
                         }
                     }
+
+                    $rekapSheets = [
+                        'total' => $totalSemua,
+                        'perKoseka' => $perKoseka
+                    ];
+
+                    // SIMPAN SELAMANYA
+                    Cache::forever('rekap_sheets_koseka', $rekapSheets);
                 }
             } catch (\Exception $e) {
-                return ['total' => 0, 'perKoseka' => []];
+                $rekapSheets = ['total' => 0, 'perKoseka' => []];
             }
-
-            return ['total' => $total, 'perKoseka' => $perKoseka];
-        });
+        }
 
         // 2. Data List KOSEKA (Tetap sama)
         $listKoseka = [
