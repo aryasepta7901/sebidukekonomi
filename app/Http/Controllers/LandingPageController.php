@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 
 class LandingPageController extends Controller
@@ -15,60 +16,59 @@ class LandingPageController extends Controller
      */
     public function index()
     {
-        // 1. Coba ambil data dari cache selamanya
-        $rekapSheets = Cache::get('rekap_sheets_koseka');
 
-        // 2. Jika cache kosong (belum pernah download), baru kita jalankan download
-        if (!$rekapSheets) {
-            $sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTfA-GmgjJmgK4Hh3ZnIq6MWj4OX0pFUkYecLNbWEtM9tvcXgUaIdmLPxi3CJ3wHQ/pub?output=csv";
-            $perKoseka = [];
-            $totalSemua = 0;
-
+        //Ambil Public Patch    
+        $filePath = public_path('wilayah/datarekap.csv');
+        $perKoseka = [];
+        $totalSemua = 0;
+        // 1. Cek apakah file ada di folder public/wilayah/
+        if (file_exists($filePath)) {
             try {
-                $response = Http::timeout(15)->get($sheetUrl);
+                // 2. Buka file CSV (mode read)
+                if (($handle = fopen($filePath, "r")) !== FALSE) {
 
-                if ($response->successful()) {
-                    $rows = str_getcsv($response->body(), "\n");
-                    array_shift($rows);
-                    $header = str_getcsv(array_shift($rows), ",");
-                    $cleanHeader = array_map(fn($h) => trim($h), $header);
+                    // Lewati baris 1 (Biasanya header judul dari Google)
+                    fgetcsv($handle);
 
+                    // Ambil baris 2 (Header kolom: kode_wilayah, 1, dll)
+                    $header = fgetcsv($handle);
+                    $cleanHeader = array_map('trim', $header);
+
+                    // Cari posisi kolom berdasarkan nama
                     $idxId = array_search('kode_wilayah', $cleanHeader);
                     $idxValue = array_search('1', $cleanHeader);
 
-                    foreach ($rows as $row) {
-                        $data = str_getcsv($row, ",");
+                    // 3. Looping baris data
+                    while (($data = fgetcsv($handle)) !== FALSE) {
                         if (isset($data[$idxId]) && isset($data[$idxValue])) {
                             $kode = trim($data[$idxId]);
-                            $jumlah = (int) preg_replace('/[^0-9]/', '', $data[$idxValue]);
 
+                            // Ambil angka saja (menghapus format ribuan atau simbol)
+                            $jumlah = (int) filter_var($data[$idxValue], FILTER_SANITIZE_NUMBER_INT);
+
+                            // Abaikan Grand Total atau baris yang jumlahnya 0
                             if (strtolower($kode) === 'grand total' || $jumlah <= 0) continue;
 
                             $totalSemua += $jumlah;
 
-                            if (strlen($kode) === 7) {
-                                $perKoseka[$kode] = ($perKoseka[$kode] ?? 0) + $jumlah;
-                            }
+                            // Ambil 7 digit pertama untuk kode KOSEKA (Kecamatan)
+                            $kode7 = substr($kode, 0, 7);
 
-                            if (strlen($kode) > 7) {
-                                $kodeParent = substr($kode, 0, 7);
-                                $perKoseka[$kodeParent] = ($perKoseka[$kodeParent] ?? 0) + $jumlah;
-                            }
+                            // Akumulasi total per wilayah
+                            $perKoseka[$kode7] = ($perKoseka[$kode7] ?? 0) + $jumlah;
                         }
                     }
-
-                    $rekapSheets = [
-                        'total' => $totalSemua,
-                        'perKoseka' => $perKoseka
-                    ];
-
-                    // SIMPAN SELAMANYA
-                    Cache::forever('rekap_sheets_koseka', $rekapSheets);
+                    fclose($handle);
                 }
             } catch (\Exception $e) {
-                $rekapSheets = ['total' => 0, 'perKoseka' => []];
+                // Jika ada error saat membaca file, biarkan data kosong
             }
         }
+
+        $rekapSheets = [
+            'total' => $totalSemua,
+            'perKoseka' => $perKoseka
+        ];
 
         // 2. Data List KOSEKA (Tetap sama)
         $listKoseka = [
@@ -94,6 +94,35 @@ class LandingPageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function updateRekap()
+    {
+        $sheetUrl = "https://docs.google.com/spreadsheets/d/1pHgqu8bmT2EljIJGiKnoCgzSYF7VKXXO/export?format=csv&gid=2054392844";
+        $directory = public_path('wilayah');
+        $filePath = $directory . '/datarekap.csv';
+
+        try {
+            // Set timeout lebih lama karena download antar server bisa lambat
+            $response = Http::timeout(30)->get($sheetUrl);
+
+            if ($response->successful()) {
+                if (!File::exists($directory)) {
+                    File::makeDirectory($directory, 0755, true);
+                }
+
+                // Simpan/Timpah file CSV di public path
+                File::put($filePath, $response->body());
+
+                // Hapus cache rekap_sheets_koseka jika masih ada sisa-sisa cache lama
+                Cache::forget('rekap_sheets_koseka');
+
+                return redirect('/')->with('success', 'Data rekap berhasil diperbarui dari Google Sheets!');
+            }
+
+            return "Gagal download. Status: " . $response->status();
+        } catch (\Exception $e) {
+            return "Terjadi kesalahan: " . $e->getMessage();
+        }
+    }
     public function create()
     {
         //
