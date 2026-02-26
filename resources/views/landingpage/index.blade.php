@@ -46,7 +46,7 @@
                                 <h4>Hari</h4>
                             </div>
                             <div>
-                                <h3 class="count-hours"></h3>
+                                <h3 class="count-hours "></h3>
                                 <h4>Jam</h4>
                             </div>
                             <div>

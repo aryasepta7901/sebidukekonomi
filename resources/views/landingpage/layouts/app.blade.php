@@ -25,40 +25,64 @@
 
     <link href="{{ asset('template/frontend/assets/css/main.css') }}" rel="stylesheet">
     <style>
-        /* Pembungkus utama */
-        .logo-wrapper {
+        /* Kontainer luar */
+        .logo-container {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            /* Kunci: Meratakan secara horizontal ke tengah */
             justify-content: center;
-        }
-
-        /* Tulisan Utama SEbiduk */
-        .logo .sitename {
-            margin: 0;
+            background: transparent !important;
+            border: none !important;
             padding: 0;
-            line-height: 1;
-            /* Mencegah spasi bawaan yang terlalu besar */
+            margin: 0;
+            text-align: center;
         }
 
-        /* Tulisan BPS di Bawah */
+        .logo {
+            display: flex;
+            justify-content: center;
+            /* Memastikan gambar di dalam <a> berada di tengah */
+            align-items: center;
+            background: transparent !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 0;
+        }
+
+        .logo img {
+            height: 45px;
+            /* Sesuaikan tinggi */
+            width: auto;
+            display: block;
+            margin: 0 auto;
+            /* Memaksa gambar di tengah secara horizontal */
+        }
+
+        .sub-logo-wrapper {
+            display: block;
+            width: 100%;
+            margin-top: 2px;
+            /* Jarak antara logo dan teks */
+            background: transparent !important;
+        }
+
         .sub-logo {
             display: block;
             font-size: 9px;
-            /* Ukuran teks kecil */
             font-weight: 700;
             color: var(--default-color);
-            width: 100%;
-            /* Agar bisa justify sesuai lebar SEbiduk */
-
-            /* PENGATUR JARAK */
-            margin-top: 5px;
-            /* Tambah angka ini jika masih kurang jauh */
-
-            /* PENGATUR AGAR PANJANGNYA PAS */
-            text-align: justify;
-            text-align-last: justify;
-            letter-spacing: 0.2px;
+            text-align: left;
+            /* Pastikan teks di tengah */
             text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            margin: 2 auto;
+        }
+
+        /* Hilangkan elemen bawaan template yang mungkin mengganggu */
+        .sitename {
+            display: none !important;
         }
     </style>
 </head>
@@ -69,8 +93,8 @@
         <div
             class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
             <div class="logo-container">
-                <a href="/" class="logo d-flex align-items-center">
-                    <h1 class="sitename">SEbiduk</h1>
+                <a href="/" class="logo">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo SEbiduk">
                 </a>
                 <div class="sub-logo-wrapper">
                     <span class="sub-logo">BPS KOTA LUBUKLINGGAU</span>
