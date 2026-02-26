@@ -167,7 +167,6 @@
                 <!-- /.card -->
             </div>
         </div>
-        </div>
     </section>
     <div class="modal fade" id="modalGambar" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">

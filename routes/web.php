@@ -26,3 +26,7 @@ Route::resource('/DashboardGC', DashboardGroundCheck::class);
 Route::get('/updaterekap', [LandingPageController::class, 'updateRekap']);
 
 Route::get('/koseka/{kdkec}', [KosekaController::class, 'showDetail'])->name('koseka.detail');
+
+Route::view('/MonitoringLapangan', 'backend.monitoring');
+Route::view('/EarlyWarningSystem', 'backend.earlywarningsystem');
+Route::view('/Anomali', 'backend.anomali');
