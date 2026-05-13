@@ -65,36 +65,67 @@
                 </select>
             </div>
         </div>
-        <div class="row mb-4">
+        <div class="row mb-4 align-items-stretch">
             <div class="col-md-2">
-                <div class="card shadow-sm border-0 text-center p-3">
-                    <h6 class="text-muted mb-1">Kecamatan</h6>
-                    <h4 class="fw-bold mb-0 text-primary" id="stat-kec">-</h4>
+                <div class="card shadow-sm border-0 text-center p-3 h-100">
+                    <h6 class="text-muted mb-1" style="font-size: 0.7rem;">Kecamatan</h6>
+                    <h5 class="fw-bold mb-0 text-primary" id="stat-kec">-</h5>
                 </div>
             </div>
+            <div class="col-md-2">
+                <div class="card shadow-sm border-0 text-center p-3 h-100">
+                    <h6 class="text-muted mb-1" style="font-size: 0.7rem;">Kelurahan</h6>
+                    <h5 class="fw-bold mb-0 text-info" id="stat-nama-desa">Semua</h5>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="d-flex gap-2 h-100">
+                    <div class="card shadow-sm border-0 text-center p-2 d-flex flex-column justify-content-center"
+                        style="background: #fff; border: 2px solid #fd7e14 !important; border-radius: 12px; min-width: 130px;">
+                        <i class="bi bi-shop-window mb-1" style="color: #fd7e14; font-size: 1.4rem;"></i>
+                        <small class="text-muted fw-bold" style="font-size: 0.6rem; letter-spacing: 0.5px;">TOTAL
+                            USAHA</small>
+                        <h3 class="fw-bold mb-0" style="color: #fd7e14;" id="stat-usaha">0</h3>
+                    </div>
+
+                    <div class="card shadow-sm border-0 p-2 flex-grow-1" style="background: #f8f9fa; border-radius: 12px;">
+                        <div class="d-flex justify-content-around align-items-center h-100 text-center">
+                            <div>
+                                <i class="bi bi-building text-muted d-block mb-1" style="font-size: 1rem;"></i>
+                                <small class="text-muted d-block" style="font-size: 0.6rem;">UB</small>
+                                <span class="fw-bold" id="stat-ub">0</span>
+                            </div>
+                            <div class="border-start h-50"></div>
+                            <div>
+                                <i class="bi bi-house-door text-muted d-block mb-1" style="font-size: 1rem;"></i>
+                                <small class="text-muted d-block" style="font-size: 0.6rem;">UM</small>
+                                <span class="fw-bold" id="stat-um">0</span>
+                            </div>
+                            <div class="border-start h-50"></div>
+                            <div>
+                                <i class="bi bi-basket text-muted d-block mb-1" style="font-size: 1rem;"></i>
+                                <small class="text-muted d-block" style="font-size: 0.6rem;">UMK</small>
+                                <span class="fw-bold" id="stat-umk">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-md-3">
-                <div class="card shadow-sm border-0 text-center p-3">
-                    <h6 class="text-muted mb-1">Kelurahan</h6>
-                    <h4 class="fw-bold mb-0 text-info" id="stat-nama-desa">Semua</h4>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 text-center p-3"
-                    style="background: #fff5eb; border: 1px solid #fd7e14 !important;">
-                    <h6 class="text-muted mb-1">Usaha Aktif (SE)</h6>
-                    <h4 class="fw-bold mb-0" style="color: #fd7e14;" id="stat-usaha">0</h4>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card shadow-sm border-0 text-center p-3">
-                    <h6 class="text-muted mb-1">Total SLS</h6>
-                    <h4 class="fw-bold mb-0 text-warning" id="stat-sls">0</h4>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card shadow-sm border-0 text-center p-3">
-                    <h6 class="text-muted mb-1">Sub-SLS</h6>
-                    <h4 class="fw-bold mb-0 text-danger" id="stat-subsls">0</h4>
+                <div class="d-flex flex-column gap-2 h-100">
+                    <div
+                        class="card shadow-sm border-0 text-center p-2 flex-grow-1 d-flex flex-column justify-content-center">
+                        <small class="text-muted d-block" style="font-size: 0.6rem;">Total SLS</small>
+                        <h5 class="fw-bold mb-0 text-warning" id="stat-sls">0</h5>
+                    </div>
+
+                    <div
+                        class="card shadow-sm border-0 text-center p-2 flex-grow-1 d-flex flex-column justify-content-center">
+                        <small class="text-muted d-block" style="font-size: 0.6rem;">Sub-SLS</small>
+                        <h5 class="fw-bold mb-0 text-danger" id="stat-subsls">0</h5>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,9 +141,13 @@
         const dataKec = @json($targetKec);
         const dataDesa = @json($targetDesa);
         const dataSubSLS = @json($targetSubSLS);
-        const totalKecamatan = {{ $totalKecamatan }};
-        const rekapKelurahan = @json($rekapKelurahan);
-
+        const rekapKelurahan = @json($rekapKelurahan) || {};
+        const totalKec = @json($totalKecamatan) || {
+            ub: 0,
+            um: 0,
+            umk: 0,
+            total: 0
+        };
         const sourceCRS = 'EPSG:3857';
         const destCRS = 'EPSG:4326';
 
@@ -134,18 +169,25 @@
                 "color": "#d35400",
                 "weight": 6,
                 "fillOpacity": 0,
-                "interactive": false // Agar klik tembus ke bawah (SLS)
+                "interactive": false
             };
 
             const styleDesa = function(feature) {
-                let kode = String(feature.properties.kddesa || feature.properties.KDDESA).padStart(3, '0');
-                let jumlah = rekapKelurahan[kode] || 0;
+                // PERBAIKAN: Ambil 3 digit kode desa
+                let kode = String(feature.properties.kddesa || feature.properties.KDDESA).slice(-3);
+
+                // PERBAIKAN: Ambil properti .total karena rekapKelurahan[kode] adalah objek
+                let dataSensusDesa = rekapKelurahan[kode] || {
+                    total: 0
+                };
+                let jumlahTotal = dataSensusDesa.total || 0;
+
                 return {
                     "color": "#2980b9",
                     "weight": 2.5,
-                    "fillColor": getColorHeatmap(jumlah),
+                    "fillColor": getColorHeatmap(jumlahTotal), // Gunakan jumlahTotal (angka)
                     "fillOpacity": 0.6,
-                    "interactive": false // PENTING: Agar klik "tembus" ke layer SLS di atasnya
+                    "interactive": false
                 };
             };
 
@@ -296,13 +338,17 @@
         function updateDashboard(kddesa) {
             let filteredSLS = [];
             let labelDesa = "";
-            let jumlahUsaha = 0;
+            let dataSensus = {
+                ub: 0,
+                um: 0,
+                umk: 0,
+                total: 0
+            };
 
-            // --- TAMBAHKAN LOGIKA UNTUK NAMA KECAMATAN DI SINI ---
+            // --- PERBAIKAN: UPDATE NAMA KECAMATAN ---
             if (dataKec && dataKec.features && dataKec.features.length > 0) {
-                // Mengambil properti dari fitur pertama karena ini sudah di-filter per kecamatan di Controller
-                let propKec = dataKec.features[0].properties;
-                document.getElementById('stat-kec').innerText = propKec.nmkec || propKec.NMKEC || "Kecamatan";
+                let pKec = dataKec.features[0].properties;
+                document.getElementById('stat-kec').innerText = pKec.nmkec || pKec.NMKEC || "-";
             }
 
             if (kddesa === 'all') {
@@ -310,36 +356,36 @@
                 labelDesa = (dataDesa.features ? dataDesa.features.length : 0) + " Kelurahan";
                 document.getElementById('active-location').innerText = "Seluruh Wilayah Kecamatan";
 
-                // Ambil total kecamatan yang dihitung di Controller
-                jumlahUsaha = totalKecamatan;
+                // PERBAIKAN: Gunakan totalKec (sudah objek dari controller)
+                dataSensus = totalKec;
             } else {
-                // Filter SLS berdasarkan kddesa (biasanya 3 digit terakhir)
+                const shortKD = String(kddesa).slice(-3);
+
                 filteredSLS = dataSubSLS.features.filter(f =>
-                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesa).slice(-3)
+                    String(f.properties.kddesa || f.properties.KDDESA).slice(-3) === shortKD
                 );
 
-                // Cari nama desa dari GeoJSON desa
                 let dObj = dataDesa.features.find(f =>
-                    String(f.properties.kddesa || f.properties.KDDESA) === String(kddesa).slice(-3)
+                    String(f.properties.kddesa || f.properties.KDDESA).slice(-3) === shortKD
                 );
 
                 labelDesa = dObj ? (dObj.properties.nmdesa || dObj.properties.NMDESA) : "-";
                 document.getElementById('active-location').innerText = "Kelurahan " + labelDesa;
 
-                // Ambil data rekap usaha dari Excel yang dikirim Controller
-                let shortKD = String(kddesa).slice(-3);
-                jumlahUsaha = rekapKelurahan[shortKD] || 0;
+                // PERBAIKAN: Ambil data sensus per kelurahan
+                if (rekapKelurahan[shortKD]) {
+                    dataSensus = rekapKelurahan[shortKD];
+                }
             }
 
-            // Update elemen UI
+            // UPDATE UI
             document.getElementById('stat-nama-desa').innerText = labelDesa;
+            document.getElementById('stat-usaha').innerText = (dataSensus.total || 0).toLocaleString('id-ID');
+            document.getElementById('stat-ub').innerText = (dataSensus.ub || 0).toLocaleString('id-ID');
+            document.getElementById('stat-um').innerText = (dataSensus.um || 0).toLocaleString('id-ID');
+            document.getElementById('stat-umk').innerText = (dataSensus.umk || 0).toLocaleString('id-ID');
 
-            // Update elemen Usaha Aktif (pastikan ID ini ada di HTML Card Anda)
-            const elUsaha = document.getElementById('stat-usaha');
-            if (elUsaha) {
-                elUsaha.innerText = jumlahUsaha.toLocaleString('id-ID');
-            }
-
+            // Update Info SLS
             let uniqueSLS = new Set(filteredSLS.map(f => f.properties.idsls || f.properties.IDSLS));
             document.getElementById('stat-sls').innerText = uniqueSLS.size;
             document.getElementById('stat-subsls').innerText = filteredSLS.length - uniqueSLS.size;

@@ -204,9 +204,9 @@
                             Batal <i class="fas fa-times"></i>
                         </a>
                         @if (!$GroundCheck->latitude || !$GroundCheck->longitude || !$GroundCheck->foto_usaha)
-                            <button type="submit" class="btn btn-primary">
+                            {{-- <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Simpan Perubahan
-                            </button>
+                            </button> --}}
                         @else
                             <div class="alert alert-success">
                                 <i class="fas fa-check-circle"></i> Data Ground Check sudah lengkap dan telah tersimpan.

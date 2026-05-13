@@ -93,51 +93,53 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12"> {{-- Gunakan lebar penuh agar cukup untuk 2 kolom --}}
-                    <div class="card">
-                        <div class="card-header bg-primary">
-                            <h3 class="card-title"><i class="fas fa-chart-line mr-2"></i> Top 10 Progress Petugas </h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                {{-- Membagi data menjadi 2 bagian (masing-masing maksimal 5 data) --}}
-                                @foreach ($topPetugas->take(10)->chunk(5) as $chunk)
-                                    <div class="col-md-6">
-                                        <ul class="list-group list-group-flush">
-                                            @foreach ($chunk as $index => $tp)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center border-bottom">
-                                                    <div>
-                                                        {{-- Menghitung nomor urut --}}
-                                                        <span
-                                                            class="badge badge-light mr-2">{{ $loop->parent->index * 5 + $loop->iteration }}.</span>
-                                                        <strong>{{ $tp->nama }}</strong>
-                                                    </div>
-                                                    <span class="badge badge-success badge-pill">
-                                                        {{ $tp->groundchecks_count }} GC
-                                                    </span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endforeach
+            @if (in_array(Auth::user()->role, ['admin']))
+                <div class="row">
+                    <div class="col-md-12"> {{-- Gunakan lebar penuh agar cukup untuk 2 kolom --}}
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h3 class="card-title"><i class="fas fa-chart-line mr-2"></i> Top 10 Progress Petugas </h3>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="fas fa-sync-alt mr-1"></i> Data diurutkan berdasarkan performa tertinggi
-                                </small>
-                                <small class="text-muted font-italic">
-                                    <i class="far fa-clock mr-1"></i> Terakhir diperbarui:
-                                    {{ now()->format('d M Y | H:i') }} WIB
-                                </small>
+                            <div class="card-body">
+                                <div class="row">
+                                    {{-- Membagi data menjadi 2 bagian (masing-masing maksimal 5 data) --}}
+                                    @foreach ($topPetugas->take(10)->chunk(5) as $chunk)
+                                        <div class="col-md-6">
+                                            <ul class="list-group list-group-flush">
+                                                @foreach ($chunk as $index => $tp)
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center border-bottom">
+                                                        <div>
+                                                            {{-- Menghitung nomor urut --}}
+                                                            <span
+                                                                class="badge badge-light mr-2">{{ $loop->parent->index * 5 + $loop->iteration }}.</span>
+                                                            <strong>{{ $tp->nama }}</strong>
+                                                        </div>
+                                                        <span class="badge badge-success badge-pill">
+                                                            {{ $tp->groundchecks_count }} GC
+                                                        </span>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-sync-alt mr-1"></i> Data diurutkan berdasarkan performa tertinggi
+                                    </small>
+                                    <small class="text-muted font-italic">
+                                        <i class="far fa-clock mr-1"></i> Terakhir diperbarui:
+                                        {{ now()->format('d M Y | H:i') }} WIB
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endif
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">

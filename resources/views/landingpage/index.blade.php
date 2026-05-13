@@ -39,8 +39,8 @@
                     </div>
 
                     <div class="countdown-wrapper mt-4" data-aos="fade-up" data-aos-delay="500">
-                        <h5 class="countdown-title">Kick-off Pencacahan Lapangan SE2026:</h5>
-                        <div class="countdown d-flex justify-content-start" data-count="2026/05/01">
+                        <h5 class="countdown-title">Sisa Waktu Pencacahan Lapangan SE2026</h5>
+                        <div class="countdown d-flex justify-content-start" data-count="2026/09/01">
                             <div>
                                 <h3 class="count-days"></h3>
                                 <h4>Hari</h4>
@@ -107,7 +107,7 @@
                     <li class="nav-item"><button class="nav-link" id="tab-5" data-bs-toggle="tab"
                             data-bs-target="#pane-5" type="button">Mei</button></li>
                     <li class="nav-item"><button class="nav-link" id="tab-6" data-bs-toggle="tab"
-                            data-bs-target="#pane-6" type="button">Juni - Juli</button></li>
+                            data-bs-target="#pane-6" type="button">Juni - Agustus</button></li>
                 </ul>
             </div>
 
@@ -433,15 +433,30 @@
                             <div class="mb-2">
                                 <i class="bi bi-graph-up-arrow" style="font-size: 2rem; opacity: 0.8;"></i>
                             </div>
-                            <h5 class="card-title fw-light text-uppercase tracking-wider">Usaha Aktif (SE) di Kota Lubuk
-                                Linggau</h5>
-                            <h2 class="display-3 fw-bold my-3">
+                            <h5 class="card-title fw-light text-uppercase tracking-wider">Total Usaha Aktif</h5>
+                            <h2 class="display-3 fw-bold my-2">
                                 {{ number_format($totalUsahaAktif ?? 0, 0, ',', '.') }}
                             </h2>
+
+                            <div class="row g-2 mt-3 mb-4">
+                                <div class="col-4 border-end border-white border-opacity-25">
+                                    <p class="mb-0 small opacity-75">UB</p>
+                                    <h6 class="fw-bold mb-0">{{ number_format($totalUB ?? 0, 0, ',', '.') }}</h6>
+                                </div>
+                                <div class="col-4 border-end border-white border-opacity-25">
+                                    <p class="mb-0 small opacity-75">UM</p>
+                                    <h6 class="fw-bold mb-0">{{ number_format($totalUM ?? 0, 0, ',', '.') }}</h6>
+                                </div>
+                                <div class="col-4">
+                                    <p class="mb-0 small opacity-75">UMK</p>
+                                    <h6 class="fw-bold mb-0">{{ number_format($totalUMK ?? 0, 0, ',', '.') }}</h6>
+                                </div>
+                            </div>
+
                             <div
                                 style="background: rgba(255,255,255,0.2); border-radius: 50px; padding: 5px 15px; display: inline-block;">
                                 <p class="mb-0 small">
-                                    <i class="bi bi-check-circle-fill me-1"></i> Hasil Ground Checking Matcha Mobile 2026
+                                    <i class="bi bi-check-circle-fill me-1"></i> Hasil Ground Checking SE2026
                                 </p>
                             </div>
                         </div>
@@ -475,21 +490,63 @@
                                         <h2 id="{{ $koseka['id'] }}">{{ $koseka['wilayah'] }}</h2>
                                         <p class="fst-italic text-muted">{{ $koseka['quote'] }}</p>
 
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="badge-rekap p-2 px-3 shadow-sm d-flex align-items-center"
-                                                style="background: #fff; border: 1px solid #fd7e14; border-radius: 10px; color: #333;">
-                                                <div class="me-3 text-center">
-                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">USAHA
-                                                        AKTIF</small>
-                                                    <span class="fw-bold" style="color: #fd7e14; font-size: 1.2rem;">
-                                                        {{ number_format($rekapPerKoseka[$koseka['id']] ?? 0, 0, ',', '.') }}
+                                        <div class="d-flex align-items-stretch gap-3 mb-3">
+                                            <div class="badge-rekap p-3 shadow-sm d-flex align-items-center justify-content-center gap-3"
+                                                style="background: #fff; border: 2px solid #fd7e14; border-radius: 12px; color: #333; min-width: 180px; flex: 1.5;">
+
+                                                <i class="bi bi-shop-window"
+                                                    style="font-size: 2.2rem; color: #fd7e14;"></i>
+
+                                                <div class="text-center">
+                                                    <small class="text-muted d-block text-uppercase fw-bold"
+                                                        style="font-size: 0.7rem; letter-spacing: 1px;">Usaha Aktif</small>
+                                                    <span class="fw-bold"
+                                                        style="color: #fd7e14; font-size: 2rem; line-height: 1;">
+                                                        {{ number_format($rekapPerKoseka[$koseka['id']]['total'] ?? 0, 0, ',', '.') }}
                                                     </span>
                                                 </div>
-                                                <i class="bi bi-shop-window"
-                                                    style="font-size: 1.5rem; color: #fd7e14;"></i>
+                                            </div>
+
+                                            <div class="badge-rekap p-2 px-3 shadow-sm d-flex align-items-center flex-grow-1"
+                                                style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 12px; color: #333; flex: 2;">
+
+                                                <div class="d-flex justify-content-around w-100 text-center">
+                                                    <div class="px-2">
+                                                        <i class="bi bi-building d-block mb-1 text-muted"
+                                                            style="font-size: 1.1rem;"></i>
+                                                        <small class="text-muted d-block"
+                                                            style="font-size: 0.65rem;">UB</small>
+                                                        <span class="fw-bold" style="font-size: 1.1rem;">
+                                                            {{ number_format($rekapPerKoseka[$koseka['id']]['ub'] ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="border-start"></div>
+
+                                                    <div class="px-2">
+                                                        <i class="bi bi-house-door d-block mb-1 text-muted"
+                                                            style="font-size: 1.1rem;"></i>
+                                                        <small class="text-muted d-block"
+                                                            style="font-size: 0.65rem;">UM</small>
+                                                        <span class="fw-bold" style="font-size: 1.1rem;">
+                                                            {{ number_format($rekapPerKoseka[$koseka['id']]['um'] ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="border-start"></div>
+
+                                                    <div class="px-2">
+                                                        <i class="bi bi-basket d-block mb-1 text-muted"
+                                                            style="font-size: 1.1rem;"></i>
+                                                        <small class="text-muted d-block"
+                                                            style="font-size: 0.65rem;">UMK</small>
+                                                        <span class="fw-bold" style="font-size: 1.1rem;">
+                                                            {{ number_format($rekapPerKoseka[$koseka['id']]['umk'] ?? 0, 0, ',', '.') }}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-
 
                                         <p>{{ $koseka['deskripsi'] }}</p>
 

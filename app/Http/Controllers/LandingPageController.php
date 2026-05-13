@@ -21,6 +21,7 @@ class LandingPageController extends Controller
         $filePath = public_path('wilayah/datarekap.csv');
         $perKoseka = [];
         $totalSemua = 0;
+
         // 1. Cek apakah file ada di folder public/wilayah/
         if (file_exists($filePath)) {
             try {
@@ -34,28 +35,39 @@ class LandingPageController extends Controller
                     $header = fgetcsv($handle);
                     $cleanHeader = array_map('trim', $header);
 
-                    // Cari posisi kolom berdasarkan nama
-                    $idxId = array_search('kode_wilayah', $cleanHeader);
-                    $idxValue = array_search('1', $cleanHeader);
+                    // Cari posisi kolom berdasarkan nama header baru
+                    $idxId = array_search('KDWIL', $cleanHeader);
+                    $idxUB = array_search('UB', $cleanHeader);
+                    $idxUM = array_search('UM', $cleanHeader);
+                    $idxUMK = array_search('UMK', $cleanHeader);
+                    $idxTotal = array_search('Grand Total', $cleanHeader);
 
-                    // 3. Looping baris data
                     while (($data = fgetcsv($handle)) !== FALSE) {
-                        if (isset($data[$idxId]) && isset($data[$idxValue])) {
+                        if (isset($data[$idxId])) {
                             $kode = trim($data[$idxId]);
+                            if (strtolower($kode) === 'grand total' || $kode == "") continue;
 
-                            // Ambil angka saja (menghapus format ribuan atau simbol)
-                            $jumlah = (int) filter_var($data[$idxValue], FILTER_SANITIZE_NUMBER_INT);
+                            // Ambil nilai masing-masing kolom (sanitize angka)
+                            $valUB    = (int) filter_var($data[$idxUB] ?? 0, FILTER_SANITIZE_NUMBER_INT);
+                            $valUM    = (int) filter_var($data[$idxUM] ?? 0, FILTER_SANITIZE_NUMBER_INT);
+                            $valUMK   = (int) filter_var($data[$idxUMK] ?? 0, FILTER_SANITIZE_NUMBER_INT);
+                            $valTotal = (int) filter_var($data[$idxTotal] ?? 0, FILTER_SANITIZE_NUMBER_INT);
 
-                            // Abaikan Grand Total atau baris yang jumlahnya 0
-                            if (strtolower($kode) === 'grand total' || $jumlah <= 0) continue;
+                            // Contoh: Jika ingin menjumlahkan total keseluruhan
+                            $totalSemua += $valTotal;
 
-                            $totalSemua += $jumlah;
-
-                            // Ambil 7 digit pertama untuk kode KOSEKA (Kecamatan)
+                            // Ambil 7 digit pertama untuk kode Kecamatan
                             $kode7 = substr($kode, 0, 7);
 
-                            // Akumulasi total per wilayah
-                            $perKoseka[$kode7] = ($perKoseka[$kode7] ?? 0) + $jumlah;
+                            // Akumulasi per KOSEKA dalam bentuk array agar detail UB/UM/UMK tersimpan
+                            if (!isset($perKoseka[$kode7])) {
+                                $perKoseka[$kode7] = ['ub' => 0, 'um' => 0, 'umk' => 0, 'total' => 0];
+                            }
+
+                            $perKoseka[$kode7]['ub'] += $valUB;
+                            $perKoseka[$kode7]['um'] += $valUM;
+                            $perKoseka[$kode7]['umk'] += $valUMK;
+                            $perKoseka[$kode7]['total'] += $valTotal;
                         }
                     }
                     fclose($handle);
@@ -64,7 +76,15 @@ class LandingPageController extends Controller
                 // Jika ada error saat membaca file, biarkan data kosong
             }
         }
+        $totalUB = 0;
+        $totalUM = 0;
+        $totalUMK = 0;
 
+        foreach ($perKoseka as $item) {
+            $totalUB += $item['ub'];
+            $totalUM += $item['um'];
+            $totalUMK += $item['umk'];
+        }
         $rekapSheets = [
             'total' => $totalSemua,
             'perKoseka' => $perKoseka
@@ -84,6 +104,9 @@ class LandingPageController extends Controller
 
         return view('landingpage.index', [
             'totalUsahaAktif' => $rekapSheets['total'],
+            'totalUB'         => $totalUB,   // Variabel baru
+            'totalUM'         => $totalUM,   // Variabel baru
+            'totalUMK'        => $totalUMK,  // Variabel baru
             'rekapPerKoseka' => $rekapSheets['perKoseka'],
             'listKoseka' => $listKoseka
         ]);
@@ -96,7 +119,7 @@ class LandingPageController extends Controller
      */
     public function updateRekap()
     {
-        $sheetUrl = "https://docs.google.com/spreadsheets/d/1pHgqu8bmT2EljIJGiKnoCgzSYF7VKXXO/export?format=csv&gid=2054392844";
+        $sheetUrl = "https://docs.google.com/spreadsheets/d/1VHTGdZYKxUew_m79vkcauEVrUnduPG8V/export?format=csv&gid=2017343805";
         $directory = public_path('wilayah');
         $filePath = $directory . '/datarekap.csv';
 

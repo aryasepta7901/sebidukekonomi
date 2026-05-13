@@ -16,6 +16,9 @@ class DashboardGroundCheck extends Controller
      */
     public function index(Request $request)
     {
+        if (auth()->user()->role === 'wait') {
+            return redirect('/waiting-approval');
+        }
         if ($request->ajax()) {
             // 1. Inisialisasi Query: Tambahkan has('petugas') agar hanya ambil yang ada relasinya
             $query = GroundCheck::has('petugas')->with('petugas');
